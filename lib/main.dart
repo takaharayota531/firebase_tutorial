@@ -33,6 +33,8 @@ class _MyAuthPageState extends State<MyAuthPage> {
   // 入力されたパスワード
   String newUserPassword = "";
   // 登録・ログインに関する情報を表示
+  String loginUserEmail = "";
+  String loginUserPassword = "";
   String infoText = "";
 
   @override
@@ -88,6 +90,45 @@ class _MyAuthPageState extends State<MyAuthPage> {
                   }
                 },
                 child: Text("ユーザー登録"),
+              ),
+              const SizedBox(height: 32),
+              TextFormField(
+                decoration: InputDecoration(labelText: "mail adress"),
+                onChanged: (String value) {
+                  setState(() {
+                    loginUserEmail = value;
+                  });
+                },
+              ),
+              TextFormField(
+                decoration: InputDecoration(labelText: "password"),
+                obscureText: true,
+                onChanged: (String value) {
+                  setState(() {
+                    loginUserPassword = value;
+                  });
+                },
+              ),
+              const SizedBox(height: 8),
+              ElevatedButton(
+                onPressed: () async {
+                  try {
+                    final FirebaseAuth auth = FirebaseAuth.instance;
+                    final UserCredential result =
+                        await auth.signInWithEmailAndPassword(
+                            email: loginUserEmail, password: loginUserPassword);
+                    final User user = result.user!;
+
+                    setState(() {
+                      infoText = "loginok:${user.email}";
+                    });
+                  } catch (e) {
+                    setState(() {
+                      infoText = "login failed:${e.toString()}";
+                    });
+                  }
+                },
+                child: Text("login"),
               ),
               const SizedBox(height: 8),
               Text(infoText)
